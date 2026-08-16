@@ -1,17 +1,29 @@
 // LingoQuest Comprehensive Word Vault & Smart Dictionary with 120+ words, phonetics, hints, and examples
+import { KO_TRANSLATIONS, KO_EXAMPLES } from "./words-ko";
 
 export const CATEGORIES = [
-  { id: "all", labelUz: "Barchasi", labelRu: "Все темы", labelEn: "All Topics", icon: "✨" },
-  { id: "daily", labelUz: "Kundalik", labelRu: "Повседневное", labelEn: "Daily Life", icon: "☕" },
-  { id: "tech", labelUz: "IT & Texno", labelRu: "Технологии", labelEn: "Tech & AI", icon: "💻" },
-  { id: "food", labelUz: "Taomlar", labelRu: "Еда и напитки", labelEn: "Food & Drinks", icon: "🍕" },
-  { id: "nature", labelUz: "Tabiat & Hayvonlar", labelRu: "Природа и животные", labelEn: "Nature & Animals", icon: "🌿" },
-  { id: "travel", labelUz: "Sayohat", labelRu: "Путешествия", labelEn: "Travel & Places", icon: "✈️" },
-  { id: "business", labelUz: "Biznes & Ish", labelRu: "Бизнес и карьера", labelEn: "Business & Work", icon: "💼" },
-  { id: "verbs", labelUz: "Harakat Fe'llari", labelRu: "Глаголы", labelEn: "Action Verbs", icon: "⚡" },
-  { id: "emotions", labelUz: "Hissiyotlar", labelRu: "Эмоции и чувства", labelEn: "Emotions", icon: "🧠" },
-  { id: "idioms", labelUz: "Iboralar (Idioms)", labelRu: "Идиомы и фразы", labelEn: "Idioms & Slang", icon: "💡" },
+  { id: "all", labelUz: "Barchasi", labelRu: "Все темы", labelEn: "All Topics", labelKo: "전체 주제", icon: "✨" },
+  { id: "daily", labelUz: "Kundalik", labelRu: "Повседневное", labelEn: "Daily Life", labelKo: "일상생활", icon: "☕" },
+  { id: "tech", labelUz: "IT & Texno", labelRu: "Технологии", labelEn: "Tech & AI", labelKo: "기술 & AI", icon: "💻" },
+  { id: "food", labelUz: "Taomlar", labelRu: "Еда и напитки", labelEn: "Food & Drinks", labelKo: "음식 & 음료", icon: "🍕" },
+  { id: "nature", labelUz: "Tabiat & Hayvonlar", labelRu: "Природа и животные", labelEn: "Nature & Animals", labelKo: "자연 & 동물", icon: "🌿" },
+  { id: "travel", labelUz: "Sayohat", labelRu: "Путешествия", labelEn: "Travel & Places", labelKo: "여행 & 장소", icon: "✈️" },
+  { id: "business", labelUz: "Biznes & Ish", labelRu: "Бизнес и карьера", labelEn: "Business & Work", labelKo: "비즈니스 & 직업", icon: "💼" },
+  { id: "verbs", labelUz: "Harakat Fe'llari", labelRu: "Глаголы", labelEn: "Action Verbs", labelKo: "동사", icon: "⚡" },
+  { id: "emotions", labelUz: "Hissiyotlar", labelRu: "Эмоции и чувства", labelEn: "Emotions", labelKo: "감정", icon: "🧠" },
+  { id: "idioms", labelUz: "Iboralar (Idioms)", labelRu: "Идиомы и фразы", labelEn: "Idioms & Slang", labelKo: "관용구 & 속어", icon: "💡" },
 ];
+
+/**
+ * Pick the localized label for an object that has labelUz / labelRu / labelEn / labelKo
+ */
+export function localizedLabel(obj, lang) {
+  if (!obj) return "";
+  if (lang === "ru") return obj.labelRu || obj.labelUz;
+  if (lang === "en") return obj.labelEn || obj.labelRu || obj.labelUz;
+  if (lang === "ko") return obj.labelKo || obj.labelEn || obj.labelRu || obj.labelUz;
+  return obj.labelUz;
+}
 
 export const WORD_BANK = [
   // --- Daily Life & Essentials ---
@@ -108,6 +120,12 @@ export const WORD_BANK = [
   { en: "Under the weather", ru: "Нездоровится / Приболел", uz: "Biroz tobi qochmoq", ipa: "/ˈʌn.dɚ ðə ˈweð.ɚ/", category: "idioms", hintUz: "O'zini biroz noxush yoki shamollagan his qilmoq", hintRu: "Плохо себя чувствовать, приболеть", exampleEn: "I felt a bit under the weather yesterday.", exampleUz: "Kecha biroz tobim qochgan edi.", exampleRu: "Вчера мне немного нездоровилось." },
 ];
 
+// Merge Korean translations & examples into every word (leaves en/ru/uz untouched)
+for (const w of WORD_BANK) {
+  w.ko = KO_TRANSLATIONS[w.en] || w.uz;
+  w.exampleKo = KO_EXAMPLES[w.en] || w.exampleEn;
+}
+
 function shuffle(array) {
   const copy = [...array];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -162,6 +180,8 @@ export function getSmartDuoHint(word, lang = "uz") {
     return word.hintRu || `Подсказка от Дуо: слово начинается на "${firstLetter}", состоит из ${len} букв! Перевод: "${targetTrans}" 🦉`;
   } else if (lang === "en") {
     return `Duo's Hint: Starts with "${firstLetter}", ${len} letters total! 🦉`;
+  } else if (lang === "ko") {
+    return `두오의 힌트: "${firstLetter}"(으)로 시작하고 총 ${len}개의 글자예요! 뜻: "${targetTrans}" 🦉`;
   }
   return word.hintUz || `Duo maslahati: Bu so'z "${firstLetter}" harfidan boshlanadi va ${len} ta harfdan iborat! 🦉`;
 }

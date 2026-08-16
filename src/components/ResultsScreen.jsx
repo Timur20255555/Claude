@@ -28,7 +28,7 @@ export default function ResultsScreen({
   onDifficulty,
   onHome,
 }) {
-  const { lang, t } = useLanguage();
+  const { t } = useLanguage();
   const [showReview, setShowReview] = useState(false);
 
   const {
@@ -134,11 +134,7 @@ export default function ResultsScreen({
           </h1>
           <p className="text-xs text-slate-400 mt-1">
             {profile?.name ? `${profile.name}, ` : ""}
-            {lang === "uz"
-              ? "Natijalaringiz yangilandi!"
-              : lang === "ru"
-              ? "Твой прогресс успешно сохранён!"
-              : "Your progress has been recorded!"}
+            {t("resultsSavedMsg")}
           </p>
         </div>
 

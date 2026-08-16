@@ -30,6 +30,9 @@ const DEFAULT_PROFILE = {
   avatar: "⚡",
   lang: "uz",
   difficulty: "medium",
+  persona: "student", // school | student | adult | tourist
+  authProvider: "manual", // manual | google
+  googleEmail: "",
   xp: 0,
   level: 1,
   xpIntoLevel: 0,
@@ -38,9 +41,15 @@ const DEFAULT_PROFILE = {
   bestScore: 0,
   gamesPlayed: 0,
   totalCorrect: 0,
+  dailyRounds: 0,
+  lastActiveDate: null,
   achievements: ["welcome"],
   customWords: [],
 };
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
 
 function getLocalProfile() {
   try {
@@ -118,7 +127,10 @@ export function usePlayerProfile() {
         const data = await res.json();
         summary = data.summary;
         setProfile((prev) => {
-          const next = { ...prev, ...data.progress };
+          // Track the daily-round goal locally (server keeps the rest)
+          const today = todayISO();
+          const dailyRounds = prev.lastActiveDate === today ? (prev.dailyRounds || 0) + 1 : 1;
+          const next = { ...prev, ...data.progress, dailyRounds, lastActiveDate: today };
           saveLocalProfile(next);
           return next;
         });
@@ -134,6 +146,9 @@ export function usePlayerProfile() {
     const newGames = (profile.gamesPlayed || 0) + 1;
     const newCorrect = (profile.totalCorrect || 0) + correct;
 
+    const today = todayISO();
+    const dailyRounds = profile.lastActiveDate === today ? (profile.dailyRounds || 0) + 1 : 1;
+
     const nextState = {
       ...profile,
       xp: newXp,
@@ -144,6 +159,8 @@ export function usePlayerProfile() {
       bestScore: newBest,
       gamesPlayed: newGames,
       totalCorrect: newCorrect,
+      dailyRounds,
+      lastActiveDate: today,
     };
 
     setProfile(nextState);
@@ -184,11 +201,26 @@ export function usePlayerProfile() {
     setProfile({ ...DEFAULT_PROFILE });
   }, []);
 
+  // Sign in with a Google account (demo picker). Extracts a friendly name,
+  // assigns an avatar and marks the profile as Google-authenticated.
+  const signInWithGoogle = useCallback(async (account) => {
+    const name = (account?.name || "").split(" ")[0] || "Explorer";
+    const fields = {
+      name: name.slice(0, 20),
+      avatar: account?.avatar || "🦉",
+      authProvider: "google",
+      googleEmail: account?.email || "",
+    };
+    await updateUser(fields);
+    return fields;
+  }, [updateUser]);
+
   return {
     ...profile,
     updateUser,
     completeSession,
     addCustomWord,
     logout,
+    signInWithGoogle,
   };
 }

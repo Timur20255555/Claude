@@ -7,7 +7,7 @@ import {
   RotateCcw,
   Zap,
 } from "lucide-react";
-import { pickRoundWords, CATEGORIES } from "../data/words";
+import { pickRoundWords, CATEGORIES, localizedLabel } from "../data/words";
 import { useLanguage } from "../context/useLanguage";
 import { playCorrect, playClick, speakWord } from "../utils/sound";
 
@@ -22,7 +22,13 @@ export default function FlashcardsGame({ category = "all", onFinish }) {
   const card = cards[currentIndex] || cards[0];
   const translation = card ? card[lang] || card.uz || card.ru : "";
   const exampleTrans =
-    lang === "ru" ? card?.exampleRu : lang === "en" ? card?.exampleEn : card?.exampleUz;
+    lang === "ru"
+      ? card?.exampleRu
+      : lang === "en"
+      ? card?.exampleEn
+      : lang === "ko"
+      ? card?.exampleKo
+      : card?.exampleUz;
 
   const categoryObj = CATEGORIES.find((c) => c.id === card?.category);
 
@@ -106,7 +112,7 @@ export default function FlashcardsGame({ category = "all", onFinish }) {
               {categoryObj && (
                 <span className="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 flex items-center gap-1.5">
                   <span>{categoryObj.icon}</span>
-                  <span>{lang === "ru" ? categoryObj.labelRu : lang === "en" ? categoryObj.labelEn : categoryObj.labelUz}</span>
+                  <span>{localizedLabel(categoryObj, lang)}</span>
                 </span>
               )}
 
@@ -145,7 +151,7 @@ export default function FlashcardsGame({ category = "all", onFinish }) {
             {/* Back Side: Translation & Example */}
             <div className="absolute inset-0 rounded-3xl bg-slate-900/95 border-2 border-cyan-500/50 p-6 sm:p-8 flex flex-col items-center justify-between text-center shadow-2xl [transform:rotateY(180deg)] [backface-visibility:hidden]">
               <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
-                {lang === "uz" ? "O'zbekcha tarjimasi" : lang === "ru" ? "Русский перевод" : "Translation"}
+                {t("translationLabel")}
               </span>
 
               <div className="space-y-3">

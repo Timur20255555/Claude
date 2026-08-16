@@ -6,6 +6,7 @@ import {
   Flame,
   Compass,
   Trophy,
+  Target,
   ArrowRight,
   Puzzle,
   BookOpen,
@@ -13,7 +14,7 @@ import {
   Gamepad2,
 } from "lucide-react";
 import { useLanguage } from "../context/useLanguage";
-import { CATEGORIES } from "../data/words";
+import { CATEGORIES, localizedLabel } from "../data/words";
 import { playClick } from "../utils/sound";
 import { getRank } from "../hooks/usePlayerProfile";
 import HeroMascot from "./HeroMascot";
@@ -27,6 +28,8 @@ export default function DifficultyScreen({ profile, onSelectMode }) {
   );
 
   const rank = getRank(profile?.level || 1, lang);
+  const DAILY_GOAL = 3;
+  const dailyDone = Math.min(profile?.dailyRounds || 0, DAILY_GOAL);
 
   const GAME_MODES = [
     {
@@ -139,16 +142,33 @@ export default function DifficultyScreen({ profile, onSelectMode }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-end gap-1.5">
             <div className="text-right">
               <div className="flex items-center gap-1 text-amber-400 font-bold text-xs">
                 <Flame className="w-4 h-4 fill-amber-400" />
-                <span>{profile?.streak || 1} {lang === "uz" ? "kun" : lang === "ru" ? "дн." : "days"}</span>
+                <span>{profile?.streak || 1} {t("daysSuffix")}</span>
               </div>
               <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1 justify-end">
                 <Trophy className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Rekord: {profile?.bestScore || 0}</span>
+                <span>{t("recordLabel")}: {profile?.bestScore || 0}</span>
               </div>
+            </div>
+
+            {/* Daily goal progress chip */}
+            <div
+              title={t("dailyGoalLabel")}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold ${
+                dailyDone >= DAILY_GOAL
+                  ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
+                  : "bg-slate-800/70 border-slate-700/60 text-slate-300"
+              }`}
+            >
+              <Target className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{t("dailyGoalLabel")}:</span>
+              <span className="font-mono">
+                {dailyDone}/{DAILY_GOAL}
+              </span>
+              {dailyDone >= DAILY_GOAL && <span>🎉</span>}
             </div>
           </div>
         </div>
@@ -207,18 +227,16 @@ export default function DifficultyScreen({ profile, onSelectMode }) {
             <label className="block text-xs font-bold text-slate-300 mb-2 flex items-center justify-between">
               <span>{t("chooseTopic")}</span>
               <span className="text-[11px] text-cyan-400 font-semibold">
-                {CATEGORIES.find((c) => c.id === selectedCategory)?.icon}{" "}
-                {lang === "ru"
-                  ? CATEGORIES.find((c) => c.id === selectedCategory)?.labelRu
-                  : lang === "en"
-                  ? CATEGORIES.find((c) => c.id === selectedCategory)?.labelEn
-                  : CATEGORIES.find((c) => c.id === selectedCategory)?.labelUz}
+                {localizedLabel(
+                  CATEGORIES.find((c) => c.id === selectedCategory),
+                  lang
+                )}
               </span>
             </label>
             <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {CATEGORIES.map((cat) => {
                 const isCatActive = selectedCategory === cat.id;
-                const label = lang === "ru" ? cat.labelRu : lang === "en" ? cat.labelEn : cat.labelUz;
+                const label = localizedLabel(cat, lang);
                 return (
                   <button
                     key={cat.id}

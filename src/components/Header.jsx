@@ -10,12 +10,13 @@ import {
   Zap,
   LogOut,
   ShieldAlert,
+  Trophy,
 } from "lucide-react";
 import { useLanguage } from "../context/useLanguage";
 import { isSoundEnabled, toggleSound, playClick } from "../utils/sound";
 import { getRank } from "../hooks/usePlayerProfile";
 
-export default function Header({ profile, onOpenVault, onOpenTranslator, onOpenProfile, onLogout }) {
+export default function Header({ profile, onOpenVault, onOpenTranslator, onOpenProfile, onOpenFriends, onLogout }) {
   const { lang, setLang, t, languages } = useLanguage();
   const [soundOn, setSoundOn] = useState(isSoundEnabled);
   const [langOpen, setLangOpen] = useState(false);
@@ -35,9 +36,6 @@ export default function Header({ profile, onOpenVault, onOpenTranslator, onOpenP
       if (langRef.current && !langRef.current.contains(e.target)) {
         setLangOpen(false);
       }
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
-        setProfileMenuOpen(false);
-      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -52,7 +50,6 @@ export default function Header({ profile, onOpenVault, onOpenTranslator, onOpenP
   function handleConfirmLogout() {
     playClick();
     setShowLogoutConfirm(false);
-    setProfileMenuOpen(false);
     if (onLogout) {
       onLogout();
     }
@@ -98,6 +95,11 @@ export default function Header({ profile, onOpenVault, onOpenTranslator, onOpenP
                   <span className="text-xs font-bold text-slate-200 truncate max-w-[100px]">
                     {profile.name || "Explorer"}
                   </span>
+                  {profile.authProvider === "google" && (
+                    <span className="text-[9px] font-black text-white px-1 py-px rounded bg-gradient-to-r from-blue-500 to-blue-600 border border-blue-400/50 shrink-0">
+                      G
+                    </span>
+                  )}
                   <span className="text-[10px] text-cyan-400 font-semibold">
                     Lv.{profile.level || 1} · {rank.title}
                   </span>
@@ -118,8 +120,22 @@ export default function Header({ profile, onOpenVault, onOpenTranslator, onOpenP
             </button>
           )}
 
-          {/* Right: Actions (Translator, Vault, Sound, Language, Mobile Logout) */}
+          {/* Right: Actions (Translator, Vault, Friends, Sound, Language, Mobile Logout) */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Friends Leaderboard Button */}
+            <button
+              type="button"
+              onClick={() => {
+                playClick();
+                if (onOpenFriends) onOpenFriends();
+              }}
+              title={t("friendsTitle")}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all shadow-sm cursor-pointer"
+            >
+              <Trophy className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t("friendsTitle")}</span>
+            </button>
+
             {/* Translator Button */}
             <button
               type="button"

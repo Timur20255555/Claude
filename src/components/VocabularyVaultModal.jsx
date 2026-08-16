@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Volume2, X, BookOpen, Sparkles, Star } from "lucide-react";
-import { WORD_BANK, CATEGORIES } from "../data/words";
+import { WORD_BANK, CATEGORIES, localizedLabel } from "../data/words";
 import { useLanguage } from "../context/useLanguage";
 import { speakWord, playClick } from "../utils/sound";
 
@@ -27,7 +27,8 @@ export default function VocabularyVaultModal({ isOpen, onClose, customWords = []
       const enMatch = word.en?.toLowerCase().includes(q);
       const ruMatch = word.ru && word.ru.toLowerCase().includes(q);
       const uzMatch = word.uz && word.uz.toLowerCase().includes(q);
-      return enMatch || ruMatch || uzMatch;
+      const koMatch = word.ko && word.ko.toLowerCase().includes(q);
+      return enMatch || ruMatch || uzMatch || koMatch;
     });
   }, [allWords, search, activeCategory]);
 
@@ -71,6 +72,8 @@ export default function VocabularyVaultModal({ isOpen, onClose, customWords = []
                     ? "So'zlar, talaffuz va amaliy misollar"
                     : lang === "ru"
                     ? "Слова, произношение и примеры"
+                    : lang === "ko"
+                    ? "단어, 발음과 예문"
                     : "Vocabulary, phonetics & usage examples"}
                 </p>
               </div>
@@ -127,12 +130,7 @@ export default function VocabularyVaultModal({ isOpen, onClose, customWords = []
               )}
 
               {CATEGORIES.map((cat) => {
-                const label =
-                  lang === "ru"
-                    ? cat.labelRu
-                    : lang === "en"
-                    ? cat.labelEn
-                    : cat.labelUz;
+                const label = localizedLabel(cat, lang);
                 const isActive = activeCategory === cat.id;
                 return (
                   <button
@@ -170,6 +168,8 @@ export default function VocabularyVaultModal({ isOpen, onClose, customWords = []
                     ? word.exampleRu
                     : lang === "en"
                     ? word.exampleEn
+                    : lang === "ko"
+                    ? word.exampleKo
                     : word.exampleUz;
 
                 return (

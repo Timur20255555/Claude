@@ -3,17 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
   X,
-  Check,
   Flame,
-  Zap,
   Trophy,
   Target,
   Gamepad2,
-  BookOpen,
   LogOut,
-  Edit3,
-  Award,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "../context/useLanguage";
@@ -33,11 +27,11 @@ const AVATAR_OPTIONS = [
 ];
 
 const ACHIEVEMENTS_LIST = [
-  { id: "welcome", titleUz: "Birinchi Qadam", titleRu: "Первый шаг", titleEn: "First Step", descUz: "LingoQuest olamiga xush kelibsiz", descRu: "Добро пожаловать в LingoQuest", icon: "🌱" },
-  { id: "streak3", titleUz: "Olovli Ishtiyoq", titleRu: "Огненный запал", titleEn: "Flame Keeper", descUz: "3 kunlik uzluksiz seriyaga erishing", descRu: "Достигните серии в 3 дня", icon: "🔥" },
-  { id: "words20", titleUz: "So'z Jamlovchi", titleRu: "Словолов", titleEn: "Vocabulary Scout", descUz: "20 ta so'zni muvaffaqiyatli yodlang", descRu: "Выучите 20 слов", icon: "📚" },
-  { id: "perfect", titleUz: "Benuqson G'alaba", titleRu: "Безупречная победа", titleEn: "Flawless", descUz: "100% aniqlik bilan raundni yakunlang", descRu: "Завершите раунд со 100% точностью", icon: "🎯" },
-  { id: "level5", titleUz: "Lingo Ustasi", titleRu: "Мастер Lingo", titleEn: "Master Rank", descUz: "5-darajaga muvaffaqiyatli yetib boring", descRu: "Достигните 5-го уровня", icon: "👑" },
+  { id: "welcome", titleUz: "Birinchi Qadam", titleRu: "Первый шаг", titleEn: "First Step", descUz: "LingoQuest olamiga xush kelibsiz", descRu: "Добро пожаловать в LingoQuest", descEn: "Welcome to the LingoQuest world", icon: "🌱" },
+  { id: "streak3", titleUz: "Olovli Ishtiyoq", titleRu: "Огненный запал", titleEn: "Flame Keeper", descUz: "3 kunlik uzluksiz seriyaga erishing", descRu: "Достигните серии в 3 дня", descEn: "Reach a 3-day streak", icon: "🔥" },
+  { id: "words20", titleUz: "So'z Jamlovchi", titleRu: "Словолов", titleEn: "Vocabulary Scout", descUz: "20 ta so'zni muvaffaqiyatli yodlang", descRu: "Выучите 20 слов", descEn: "Successfully learn 20 words", icon: "📚" },
+  { id: "perfect", titleUz: "Benuqson G'alaba", titleRu: "Безупречная победа", titleEn: "Flawless", descUz: "100% aniqlik bilan raundni yakunlang", descRu: "Завершите раунд со 100% точностью", descEn: "Finish a round with 100% accuracy", icon: "🎯" },
+  { id: "level5", titleUz: "Lingo Ustasi", titleRu: "Мастер Lingo", titleEn: "Master Rank", descUz: "5-darajaga muvaffaqiyatli yetib boring", descRu: "Достигните 5-го уровня", descEn: "Reach level 5", icon: "👑" },
 ];
 
 export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
@@ -58,6 +52,13 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
     profile?.gamesPlayed > 0 && profile?.totalCorrect > 0
       ? Math.min(100, Math.round((profile.totalCorrect / (profile.gamesPlayed * 10)) * 100))
       : 85;
+
+  const personaLabel = {
+    school: "🎒",
+    student: "🎓",
+    adult: "💼",
+    tourist: "✈️",
+  }[profile?.persona || "student"];
 
   async function handleSaveProfile(e) {
     e?.preventDefault();
@@ -110,6 +111,23 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                 <p className="text-xs text-slate-400">
                   {rank.badge} {rank.title} • {profile?.xp || 0} XP
                 </p>
+                {personaLabel && (
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    {personaLabel}{" "}
+                    {t(
+                      profile?.persona === "school"
+                        ? "personaSchool"
+                        : profile?.persona === "adult"
+                        ? "personaAdult"
+                        : profile?.persona === "tourist"
+                        ? "personaTourist"
+                        : "personaStudent"
+                    )}
+                    {profile?.authProvider === "google" && profile.googleEmail
+                      ? ` · ${profile.googleEmail}`
+                      : ""}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -139,7 +157,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              Statistika
+              {t("profileStatsTab")}
             </button>
             <button
               type="button"
@@ -153,7 +171,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              Tahrirlash
+              {t("profileEditTab")}
             </button>
             <button
               type="button"
@@ -167,7 +185,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              Yutuqlar
+              {t("profileAchievementsTab")}
             </button>
           </div>
 
@@ -182,7 +200,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
               <div className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-2">
                 <div className="flex items-center justify-between text-xs font-bold">
                   <span className="text-slate-300">
-                    Daraja {profile?.level || 1} Progressi
+                    {t("level")} {profile?.level || 1} · {t("levelProgressLabel")}
                   </span>
                   <span className="text-cyan-400 font-mono">
                     {profile?.xpIntoLevel || 0} / {profile?.xpGoal || 100} XP
@@ -204,7 +222,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                     {profile?.streak || 1}d
                   </span>
                   <span className="text-[10px] text-slate-400 font-semibold">
-                    Kunlik seriya
+                    {t("dailyStreakLabel")}
                   </span>
                 </div>
 
@@ -214,7 +232,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                     {profile?.bestScore || 0}
                   </span>
                   <span className="text-[10px] text-slate-400 font-semibold">
-                    Eng yuqori ball
+                    {t("bestScoreLabel")}
                   </span>
                 </div>
 
@@ -224,7 +242,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                     {accuracy}%
                   </span>
                   <span className="text-[10px] text-slate-400 font-semibold">
-                    Aniqlik
+                    {t("accuracyLabel")}
                   </span>
                 </div>
               </div>
@@ -232,10 +250,10 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
               <div className="p-3 rounded-2xl bg-slate-800/40 border border-slate-700/60 flex items-center justify-between text-xs font-semibold text-slate-300">
                 <div className="flex items-center gap-2">
                   <Gamepad2 className="w-4 h-4 text-cyan-400" />
-                  <span>O'ynalgan o'yinlar:</span>
+                  <span>{t("gamesPlayedLabel")}:</span>
                 </div>
                 <span className="font-mono text-cyan-300">
-                  {profile?.gamesPlayed || 0} ta
+                  {profile?.gamesPlayed || 0}
                 </span>
               </div>
             </motion.div>
@@ -252,7 +270,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
               {/* Avatar Selector */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-2">
-                  Avatarni tanlang:
+                  {t("avatarLabel")}:
                 </label>
                 <div className="grid grid-cols-5 gap-2">
                   {AVATAR_OPTIONS.map((av) => (
@@ -278,7 +296,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
               {/* Name Input */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-2">
-                  Ismingiz yoki taxallusingiz:
+                  {t("nameLabel")}:
                 </label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -286,7 +304,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                     value={editingName}
                     onChange={(e) => setEditingName(e.target.value)}
                     maxLength={20}
-                    placeholder="Ismingiz..."
+                    placeholder={t("namePlaceholder")}
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-sm font-medium outline-none focus:border-cyan-500"
                   />
                 </div>
@@ -295,9 +313,9 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
               {/* Language Preference */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-2">
-                  Asosiy til:
+                  {t("primaryLangLabel")}
                 </label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {Object.values(languages).map((l) => (
                     <button
                       key={l.code}
@@ -322,7 +340,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                 type="submit"
                 className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-sm shadow-lg shadow-cyan-500/25 cursor-pointer"
               >
-                O'zgarishlarni saqlash
+                {t("saveProfileBtn")}
               </button>
             </motion.form>
           )}
@@ -336,7 +354,12 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
             >
               {ACHIEVEMENTS_LIST.map((ach) => {
                 const title = lang === "ru" ? ach.titleRu : lang === "en" ? ach.titleEn : ach.titleUz;
-                const desc = lang === "ru" ? ach.descRu : ach.descUz;
+                const desc =
+                  lang === "ru"
+                    ? ach.descRu
+                    : lang === "en"
+                    ? ach.descEn
+                    : ach.descUz;
                 const isUnlocked = profile?.achievements?.includes(ach.id) || ach.id === "welcome";
 
                 return (
@@ -358,7 +381,7 @@ export default function ProfileModal({ isOpen, onClose, profile, onLogout }) {
                         </h4>
                         {isUnlocked && (
                           <span className="text-[10px] text-emerald-400 font-bold">
-                            Bajarildi ✅
+                            {t("unlockedLabel")} ✅
                           </span>
                         )}
                       </div>

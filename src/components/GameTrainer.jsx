@@ -13,7 +13,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { pickRoundWords, buildOptions, CATEGORIES } from "../data/words";
+import { pickRoundWords, buildOptions, CATEGORIES, localizedLabel } from "../data/words";
 import { useLanguage } from "../context/useLanguage";
 import DuoCompanion from "./DuoCompanion";
 import {
@@ -178,6 +178,8 @@ export default function GameTrainer({
             ? word.exampleRu
             : lang === "en"
             ? word.exampleEn
+            : lang === "ko"
+            ? word.exampleKo
             : word.exampleUz,
         userAnswer: option || "(Time out)",
         isCorrect,
@@ -415,13 +417,7 @@ export default function GameTrainer({
             {categoryObj && (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/70 text-[11px] font-semibold text-slate-300 mb-3">
                 <span>{categoryObj.icon}</span>
-                <span>
-                  {lang === "ru"
-                    ? categoryObj.labelRu
-                    : lang === "en"
-                    ? categoryObj.labelEn
-                    : categoryObj.labelUz}
-                </span>
+                <span>{localizedLabel(categoryObj, lang)}</span>
               </div>
             )}
 

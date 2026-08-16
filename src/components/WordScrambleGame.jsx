@@ -182,14 +182,20 @@ export default function WordScrambleGame({
           {/* Target Translation Clue */}
           <div>
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              {lang === "uz" ? "O'zbekcha ma'nosi:" : lang === "ru" ? "Русский перевод:" : "Meaning:"}
+              {t("meaningLabel")}
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-cyan-300 font-heading mt-1">
               "{targetTranslation}"
             </h2>
             {word.exampleUz && (
               <p className="text-xs text-slate-400 italic mt-1.5">
-                {lang === "ru" ? word.exampleRu : lang === "en" ? word.exampleEn : word.exampleUz}
+                {lang === "ru"
+                  ? word.exampleRu
+                  : lang === "en"
+                  ? word.exampleEn
+                  : lang === "ko"
+                  ? word.exampleKo
+                  : word.exampleUz}
               </p>
             )}
           </div>

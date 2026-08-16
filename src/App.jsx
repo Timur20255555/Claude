@@ -1,18 +1,35 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Toaster } from "sonner";
 import Header from "./components/Header";
 import RegisterScreen from "./components/RegisterScreen";
 import DifficultyScreen from "./components/DifficultyScreen";
-import GameTrainer from "./components/GameTrainer";
-import WordScrambleGame from "./components/WordScrambleGame";
-import FlashcardsGame from "./components/FlashcardsGame";
-import ListeningChallengeGame from "./components/ListeningChallengeGame";
 import ResultsScreen from "./components/ResultsScreen";
-import VocabularyVaultModal from "./components/VocabularyVaultModal";
-import SmartTranslatorModal from "./components/SmartTranslatorModal";
 import { usePlayerProfile } from "./hooks/usePlayerProfile";
 import { LanguageProvider } from "./context/LanguageContext";
+
+// Heavy screens & modals are lazy-loaded so the first paint stays fast
+const GameTrainer = lazy(() => import("./components/GameTrainer"));
+const WordScrambleGame = lazy(() => import("./components/WordScrambleGame"));
+const FlashcardsGame = lazy(() => import("./components/FlashcardsGame"));
+const ListeningChallengeGame = lazy(() => import("./components/ListeningChallengeGame"));
+const VocabularyVaultModal = lazy(() => import("./components/VocabularyVaultModal"));
+const SmartTranslatorModal = lazy(() => import("./components/SmartTranslatorModal"));
+const ProfileModal = lazy(() => import("./components/ProfileModal"));
+const FriendsLeaderboard = lazy(() => import("./components/FriendsLeaderboard"));
+
+function ScreenLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#030712]">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 animate-pulse flex items-center justify-center shadow-lg shadow-cyan-500/25">
+          <span className="text-lg">⚡</span>
+        </div>
+        <span className="text-xs font-bold text-cyan-400/80 animate-pulse">LingoQuest...</span>
+      </div>
+    </div>
+  );
+}
 
 function MainApp() {
   const profile = usePlayerProfile();
@@ -27,6 +44,8 @@ function MainApp() {
   const [lastSummary, setLastSummary] = useState(null);
   const [isVaultOpen, setIsVaultOpen] = useState(false);
   const [isTranslatorOpen, setIsTranslatorOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isFriendsOpen, setIsFriendsOpen] = useState(false);
 
   async function handleFinish(results) {
     const summary = await profile.completeSession(results.score, {
@@ -83,6 +102,8 @@ function MainApp() {
         profile={profile}
         onOpenVault={() => setIsVaultOpen(true)}
         onOpenTranslator={() => setIsTranslatorOpen(true)}
+        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenFriends={() => setIsFriendsOpen(true)}
         onLogout={handleLogout}
       />
 
@@ -100,8 +121,24 @@ function MainApp() {
         onAddToVault={profile.addCustomWord}
       />
 
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        profile={profile}
+        onLogout={handleLogout}
+      />
+
+      {/* Friends Leaderboard */}
+      <FriendsLeaderboard
+        isOpen={isFriendsOpen}
+        onClose={() => setIsFriendsOpen(false)}
+        profile={profile}
+      />
+
       {/* Screen Routing */}
       <main className="w-full">
+        <Suspense fallback={<ScreenLoader />}>
         <AnimatePresence mode="wait">
           {step === "register" && (
             <motion.div
@@ -221,6 +258,7 @@ function MainApp() {
             </motion.div>
           )}
         </AnimatePresence>
+        </Suspense>
       </main>
     </div>
   );

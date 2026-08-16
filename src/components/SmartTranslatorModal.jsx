@@ -17,20 +17,20 @@ import { WORD_BANK } from "../data/words";
 // Comprehensive built-in dictionary for fast local smart translation
 const TRANSLATOR_DICT = [
   ...WORD_BANK,
-  { en: "Hello", ru: "Привет / Здравствуйте", uz: "Salom / Assalomu alaykum", ipa: "/həˈloʊ/" },
-  { en: "How are you?", ru: "Как дела?", uz: "Qalaysiz? / Ishlar qalay?", ipa: "/haʊ ɑːr juː/" },
-  { en: "Thank you", ru: "Спасибо", uz: "Rahmat / Tashakkur", ipa: "/θæŋk juː/" },
-  { en: "Good morning", ru: "Доброе утро", uz: "Xayrli tong", ipa: "/ɡʊd ˈmɔːr.nɪŋ/" },
-  { en: "Good night", ru: "Спокойной ночи", uz: "Xayrli tun", ipa: "/ɡʊd naɪt/" },
-  { en: "Please", ru: "Пожалуйста", uz: "Iltimos", ipa: "/pliːz/" },
-  { en: "Yes", ru: "Да", uz: "Ha", ipa: "/jes/" },
-  { en: "No", ru: "Нет", uz: "Yo'q", ipa: "/noʊ/" },
-  { en: "I love learning English", ru: "Я люблю учить английский", uz: "Men ingliz tilini o'rganishni yaxshi ko'raman", ipa: "/aɪ lʌv ˈlɜːrnɪŋ ˈɪŋɡlɪʃ/" },
-  { en: "Knowledge is power", ru: "Знание — сила", uz: "Bilim — bu qudrat", ipa: "/ˈnɑːlɪdʒ ɪz ˈpaʊər/" },
-  { en: "Never give up", ru: "Никогда не сдавайся", uz: "Hech qachon taslim bo'lma", ipa: "/ˈnev.ər ɡɪv ʌp/" },
-  { en: "Success", ru: "Успех", uz: "Muvaffaqiyat", ipa: "/səkˈses/" },
-  { en: "Dream", ru: "Мечта / Сон", uz: "Orzu / Tush", ipa: "/driːm/" },
-  { en: "Goal", ru: "Цель", uz: "Maqsad", ipa: "/ɡoʊl/" },
+  { en: "Hello", ru: "Привет / Здравствуйте", uz: "Salom / Assalomu alaykum", ko: "안녕하세요", ipa: "/həˈloʊ/" },
+  { en: "How are you?", ru: "Как дела?", uz: "Qalaysiz? / Ishlar qalay?", ko: "잘 지내세요?", ipa: "/haʊ ɑːr juː/" },
+  { en: "Thank you", ru: "Спасибо", uz: "Rahmat / Tashakkur", ko: "감사합니다", ipa: "/θæŋk juː/" },
+  { en: "Good morning", ru: "Доброе утро", uz: "Xayrli tong", ko: "좋은 아침이에요", ipa: "/ɡʊd ˈmɔːr.nɪŋ/" },
+  { en: "Good night", ru: "Спокойной ночи", uz: "Xayrli tun", ko: "좋은 밤 보내세요", ipa: "/ɡʊd naɪt/" },
+  { en: "Please", ru: "Пожалуйста", uz: "Iltimos", ko: "부탁합니다", ipa: "/pliːz/" },
+  { en: "Yes", ru: "Да", uz: "Ha", ko: "네", ipa: "/jes/" },
+  { en: "No", ru: "Нет", uz: "Yo'q", ko: "아니요", ipa: "/noʊ/" },
+  { en: "I love learning English", ru: "Я люблю учить английский", uz: "Men ingliz tilini o'rganishni yaxshi ko'raman", ko: "나는 영어 배우는 것을 좋아해요", ipa: "/aɪ lʌv ˈlɜːrnɪŋ ˈɪŋɡlɪʃ/" },
+  { en: "Knowledge is power", ru: "Знание — сила", uz: "Bilim — bu qudrat", ko: "지식은 힘이다", ipa: "/ˈnɑːlɪdʒ ɪz ˈpaʊər/" },
+  { en: "Never give up", ru: "Никогда не сдавайся", uz: "Hech qachon taslim bo'lma", ko: "절대 포기하지 마세요", ipa: "/ˈnev.ər ɡɪv ʌp/" },
+  { en: "Success", ru: "Успех", uz: "Muvaffaqiyat", ko: "성공", ipa: "/səkˈses/" },
+  { en: "Dream", ru: "Мечта / Сон", uz: "Orzu / Tush", ko: "꿈", ipa: "/driːm/" },
+  { en: "Goal", ru: "Цель", uz: "Maqsad", ko: "목표", ipa: "/ɡoʊl/" },
 ];
 
 export default function SmartTranslatorModal({ isOpen, onClose, onAddToVault }) {
@@ -119,6 +119,7 @@ export default function SmartTranslatorModal({ isOpen, onClose, onAddToVault }) 
       en: targetLang === "en" ? translationResult.text : inputText,
       uz: sourceLang === "uz" ? inputText : translationResult.text,
       ru: sourceLang === "ru" ? inputText : translationResult.text,
+      ko: targetLang === "ko" ? translationResult.text : "",
       ipa: translationResult.ipa || "/.../",
       category: "custom",
       exampleEn: targetLang === "en" ? translationResult.text : inputText,
@@ -198,6 +199,7 @@ export default function SmartTranslatorModal({ isOpen, onClose, onAddToVault }) 
               <option value="uz">🇺🇿 O'zbekcha</option>
               <option value="en">🇬🇧 English</option>
               <option value="ru">🇷🇺 Русский</option>
+              <option value="ko">🇰🇷 한국어</option>
             </select>
 
             {/* Swap Button */}
@@ -219,6 +221,7 @@ export default function SmartTranslatorModal({ isOpen, onClose, onAddToVault }) 
               <option value="en">🇬🇧 English</option>
               <option value="uz">🇺🇿 O'zbekcha</option>
               <option value="ru">🇷🇺 Русский</option>
+              <option value="ko">🇰🇷 한국어</option>
             </select>
           </div>
 
